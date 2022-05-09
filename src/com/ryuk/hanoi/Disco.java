@@ -4,7 +4,8 @@
  */
 package com.ryuk.hanoi;
 
-import java.awt.event.MouseAdapter;
+import com.ryuk.util.Constantes;
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -12,21 +13,50 @@ import javax.swing.JLabel;
  *
  * @author edyrr
  */
-public class Disco extends JLabel {
+public class Disco extends JLabel implements Constantes, Serializable {
 
     private int valor;
 
-    public Disco(int _valor, ImageIcon _img, int _width, int _height) {
+    public Disco(int _valor) {
         this.valor = _valor;
-        this.setIcon(_img);
-        this.setSize(_width, _height);
+        ImageIcon tmp = seleccionarImg(this.valor);
+        this.setIcon(tmp);
+        this.setSize(240, 50);
         this.setVisible(true);
-        super.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(java.awt.event.MouseEvent me) {
-//                super.mouseClicked(me);
-                System.out.println("Hago algo");
-            }
-        });
     }
+
+    public ImageIcon seleccionarImg(int index) {
+        switch (index) {
+            case 0:
+                return new ImageIcon(IMAGE_DISCO_VACIO);
+            case 1:
+                return new ImageIcon(IMAGE_DISCO_UNO);
+            case 2:
+                return new ImageIcon(IMAGE_DISCO_DOS);
+            case 3:
+                return new ImageIcon(IMAGE_DISCO_TRES);
+            case 4:
+                return new ImageIcon(IMAGE_DISCO_CUATRO);
+            case 5:
+                return new ImageIcon(IMAGE_DISCO_CINCO);
+            case 6:
+                return new ImageIcon(IMAGE_DISCO_SEIS);
+            case 7:
+                return new ImageIcon(IMAGE_DISCO_SIETE);
+            case 8:
+                return new ImageIcon(IMAGE_DISCO_OCHO);
+            default:
+                return null;
+        }
+    }
+
+    public int getValor() {
+        return valor;
+    }
+
+    public void setValor(int valor) {
+        this.valor = valor;
+    }
+    
+    
 }

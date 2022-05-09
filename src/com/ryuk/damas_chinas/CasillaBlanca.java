@@ -3,6 +3,8 @@ package com.ryuk.damas_chinas;
 import com.ryuk.util.Constantes;
 import java.awt.Label;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,10 +17,10 @@ import javax.swing.JLabel;
  *
  * @author edyrr
  */
-public class CasillaBlanca extends Casilla implements Constantes {
+public class CasillaBlanca extends Casilla implements Constantes, Serializable {
 
     private Damas tablero;
-    private JFrame ventanaMain;
+    private transient JFrame ventanaMain;
     private Ficha ficha;
 
     public CasillaBlanca(int _posicionX, int _posicionY, Ficha _ficha, Damas _tablero, JFrame _ventanaMain) {
@@ -32,7 +34,17 @@ public class CasillaBlanca extends Casilla implements Constantes {
         super.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent me) {
-//                super.mouseClicked(me);
+                super.mouseClicked(me);
+                movimiento();
+            }
+        });
+    }
+
+    public void crearMiMouseClicked() {
+        super.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                super.mouseClicked(me);
                 movimiento();
             }
         });
@@ -53,17 +65,17 @@ public class CasillaBlanca extends Casilla implements Constantes {
     }
 
     public void movimiento() {
-        
+
         revalidateTablero();
         posiblesMovimientos();
         repaintTablero();
     }
-    
-    public void enMovimiento(Casilla casillita){
+
+    public void enMovimiento(Casilla casillita) {
         Movement.registrarPrimeraPosicion(posicionX, posicionY);
         System.out.println("se registro: " + Movement.posicionXi + "," + Movement.posicionYi);
     }
-    
+
     public void posiblesMovimientos() {
         Casilla[][] tablerito = tablero.getTablero();
         Casilla casillita = tablerito[posicionX][posicionY];
@@ -73,7 +85,7 @@ public class CasillaBlanca extends Casilla implements Constantes {
                 return;
             }
         }
-        
+
         primerMovimiento(tablerito);
         segundoMovimiento(tablerito);
         tercerMovimiento(tablerito);
@@ -176,4 +188,9 @@ public class CasillaBlanca extends Casilla implements Constantes {
         ventanaMain.revalidate();
         ventanaMain.repaint();
     }
+
+    public void setVentanaMain(JFrame ventanaMain) {
+        this.ventanaMain = ventanaMain;
+    }
+
 }

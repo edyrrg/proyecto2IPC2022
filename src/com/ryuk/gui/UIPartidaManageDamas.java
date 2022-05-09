@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import sun.awt.WindowClosingListener;
 
 /**
  *
@@ -21,11 +22,13 @@ import javax.swing.table.DefaultTableModel;
  */
 public class UIPartidaManageDamas extends javax.swing.JFrame implements Constantes {
 
+    private final ArrayList<PartidaDamas> listDamas;
     private final ArrayList<Player> listaJugadores;
     private UIMenu windowMain;
     private int seleccionPlayerUno;
     private int seleccionPlayerDos;
     private int contadorSeleccionJugadores;
+    private boolean salir;
 
     /**
      * Constructor cuando la partida sea Jugador contra Jugador
@@ -33,14 +36,16 @@ public class UIPartidaManageDamas extends javax.swing.JFrame implements Constant
      * @param _listaJugadores
      * @param _windowMain
      */
-    public UIPartidaManageDamas(ArrayList<Player> _listaJugadores, UIMenu _windowMain) {
+    public UIPartidaManageDamas(ArrayList<Player> _listaJugadores, ArrayList<PartidaDamas> _listDamas, UIMenu _windowMain) {
         initComponents();
         ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
         this.listaJugadores = _listaJugadores;
+        this.listDamas = _listDamas;
         this.windowMain = _windowMain;
         this.setIconImage(icon.getImage());
         cargarListaJugadores();
         tablaJugadores.setEnabled(false);
+        //this.salir = false;
         this.setVisible(true);
     }
 
@@ -51,10 +56,11 @@ public class UIPartidaManageDamas extends javax.swing.JFrame implements Constant
      * @param _windowMain
      * @param player
      */
-    public UIPartidaManageDamas(ArrayList<Player> _listaJugadores, UIMenu _windowMain, Player _player) {
+    public UIPartidaManageDamas(ArrayList<Player> _listaJugadores, ArrayList<PartidaDamas> _listDamas, UIMenu _windowMain, Player _player) {
         initComponents();
         ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
         this.setIconImage(icon.getImage());
+        this.listDamas = _listDamas;
         this.listaJugadores = _listaJugadores;
         this.windowMain = _windowMain;
         cargarListaJugadores();
@@ -115,6 +121,11 @@ public class UIPartidaManageDamas extends javax.swing.JFrame implements Constant
         btnCargarPartida.setForeground(new java.awt.Color(255, 255, 255));
         btnCargarPartida.setText("Cargar Partida");
         btnCargarPartida.setPreferredSize(new java.awt.Dimension(175, 50));
+        btnCargarPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCargarPartidaActionPerformed(evt);
+            }
+        });
         bgPanel.add(btnCargarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, -1, -1));
 
         btnNewParty.setBackground(new java.awt.Color(7, 7, 60));
@@ -231,7 +242,9 @@ public class UIPartidaManageDamas extends javax.swing.JFrame implements Constant
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
-
+        if (!salir) {
+            this.setFocusMe();
+        }
     }//GEN-LAST:event_formWindowClosed
 
     private void btnNewPartyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNewPartyActionPerformed
@@ -255,12 +268,16 @@ public class UIPartidaManageDamas extends javax.swing.JFrame implements Constant
         int confirm = JOptionPane.showConfirmDialog(this, "¿Esta seguro de regresar al menu principal?",
                 "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         if (confirm == 1) {
+            salir = false;
             return;
         }
         if (confirm == -1) {
+            salir = false;
             return;
         }
+        salir = true;
         windowMain.setFocusMain();
+
     }//GEN-LAST:event_formWindowClosing
 
     private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
@@ -270,15 +287,27 @@ public class UIPartidaManageDamas extends javax.swing.JFrame implements Constant
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         Player tmpJugadorUno = listaJugadores.get(seleccionPlayerUno);
         Player tmpJugadorDos = listaJugadores.get(seleccionPlayerDos);
         Damas tmpDamas = new Damas(new GridLayout(MAX_CASILLAS, MAX_CASILLAS));
         PartidaDamas tmpPartida = new PartidaDamas(tmpDamas, tmpJugadorUno, tmpJugadorDos);
-        new UIDamasChinas(tmpPartida, windowMain);
+        new UIDamasChinas(tmpPartida, listDamas, windowMain);
+        salir = true;
         this.dispose();
     }//GEN-LAST:event_btnIniciarPartidaActionPerformed
 
+    private void btnCargarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarPartidaActionPerformed
+        // TODO add your handling code here:
+        new UICargarPartidaDamas(listDamas, this,windowMain);
+        salir = true;
+        this.dispose();
+    }//GEN-LAST:event_btnCargarPartidaActionPerformed
+    
+    public void setFocusMe(){
+        this.requestFocus();
+        this.setVisible(true);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bgPanel;
@@ -304,7 +333,7 @@ public class UIPartidaManageDamas extends javax.swing.JFrame implements Constant
                     break;
                 case 2:
                     JOptionPane.showMessageDialog(this, "Se han elegido todo los jugadores!",
-                    "Advertencia", JOptionPane.WARNING_MESSAGE);
+                            "Advertencia", JOptionPane.WARNING_MESSAGE);
                     break;
                 default:
                     throw new AssertionError();

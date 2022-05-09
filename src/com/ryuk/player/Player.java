@@ -10,7 +10,7 @@ import java.io.Serializable;
  *
  * @author edyrr
  */
-public class Player implements Serializable{
+public class Player implements Serializable {
 
     private final int ID;
     private String nombre;
@@ -25,6 +25,13 @@ public class Player implements Serializable{
         this.ID = ++cantidadJugadores;
     }
 
+    public void contarVictoria() {
+        this.victorias++;
+    }
+
+    public void contarDerrota() {
+        this.derrotas++;
+    }
 
     public int getVictorias() {
         return victorias;
@@ -53,8 +60,8 @@ public class Player implements Serializable{
     public int getId() {
         return this.ID;
     }
-    
-    public static void setCantidadJugadores(int lastID){
+
+    public static void setCantidadJugadores(int lastID) {
         cantidadJugadores = lastID;
     }
 }

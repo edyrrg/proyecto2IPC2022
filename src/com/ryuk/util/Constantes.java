@@ -42,8 +42,62 @@ public interface Constantes {
      * Maximo de jugadores que se pueden elegir en un partida de damas chinas
      */
     public final int MAXIMO_JUGADORES_PARTIDA = 2;
-    
+    /**
+     * Path donde se aloja las lista de jugadores
+     */
     public final String RUTA_DATA_PLAYER = "data/dataPlayers/";
-    
+    /**
+     * Nombre del archivo donde se guarda la lista de jugadores
+     */
     public final String NAME_FILE_DATA_PLAYER = "listPlayers.list";
+    /**
+     * Path donde se alojan los archivos de las partidas
+     */
+    public final String RUTA_DATA_PARTIDAS = "data/dataPartida/";
+    /**
+     * Nombre del archivo donde se guardan la lista de partidas de tipo
+     * PartidaDamas
+     */
+    public final String NAME_FILE_DATA_PTDAMAS = "listPtDamas.data";
+    /**
+     * Nombre del archivo donde se guardan la lista de partidas de tipo
+     * PartidaHanoi
+     */
+    public final String NAME_FILE_DATA_PTHANOI = "listPtHanoi.data";
+    /**
+     * Path de la ubicacion de la imagen para el disco 1
+     */
+    public final String IMAGE_DISCO_UNO = "resource/disco1.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco 2
+     */
+    public final String IMAGE_DISCO_DOS = "resource/disco2.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco 3
+     */
+    public final String IMAGE_DISCO_TRES = "resource/disco3.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco 4
+     */
+    public final String IMAGE_DISCO_CUATRO = "resource/disco4.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco 5
+     */
+    public final String IMAGE_DISCO_CINCO = "resource/disco5.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco 6
+     */
+    public final String IMAGE_DISCO_SEIS = "resource/disco6.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco 7
+     */
+    public final String IMAGE_DISCO_SIETE = "resource/disco7.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco 8
+     */
+    public final String IMAGE_DISCO_OCHO = "resource/disco8.png";
+    /**
+     * Path de la ubicacion de la imagen para el disco vacio
+     */
+    public final String IMAGE_DISCO_VACIO = "resource/discoVacio.png";
 }

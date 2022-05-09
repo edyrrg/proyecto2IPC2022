@@ -4,6 +4,7 @@
  */
 package com.ryuk.gui;
 
+import com.ryuk.partidas.PartidaDamas;
 import static com.ryuk.util.Constantes.ICON_UI_IMAGE;
 import com.ryuk.util.Utils;
 import com.ryuk.player.Player;
@@ -17,25 +18,23 @@ import javax.swing.JOptionPane;
  */
 public class UITipoPartida extends javax.swing.JFrame {
 
+    private ArrayList<PartidaDamas> listDamas;
     private final ArrayList<Player> listaJugadores;
     private UIMenu windowMain;
 
     /**
-     * Creates new form UITipoPartida
+     * Constructor que recibe los parametros necesarios para enviar al siguiente
+     * ventana para su funcionamiento adecuado
+     *
+     * @param _listaJugadores
+     * @param _listDamas
+     * @param _windowMain
      */
-    public UITipoPartida(ArrayList<Player> _listaJugadores, UIMenu _windowMain) {
+    public UITipoPartida(ArrayList<Player> _listaJugadores, ArrayList<PartidaDamas> _listDamas, UIMenu _windowMain) {
         initComponents();
         ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
         this.setIconImage(icon.getImage());
-        this.windowMain = _windowMain;
-        this.listaJugadores = _listaJugadores;
-        this.setVisible(true);
-    }
-
-    public UITipoPartida(ArrayList<Player> _listaJugadores, UIMenu _windowMain, Player player) {
-        initComponents();
-        ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
-        this.setIconImage(icon.getImage());
+        this.listDamas = _listDamas;
         this.windowMain = _windowMain;
         this.listaJugadores = _listaJugadores;
         this.setVisible(true);
@@ -138,7 +137,7 @@ public class UITipoPartida extends javax.swing.JFrame {
                 return;
             }
         }
-        new UIPartidaManageDamas(listaJugadores, windowMain);
+        new UIPartidaManageDamas(listaJugadores, listDamas, windowMain);
         this.dispose();
     }//GEN-LAST:event_btnPtVersusActionPerformed
 
@@ -149,7 +148,7 @@ public class UITipoPartida extends javax.swing.JFrame {
 
     private void btnPtMaquinaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPtMaquinaActionPerformed
         // TODO add your handling code here:
-        new UIPartidaManageDamas(listaJugadores, windowMain);
+        //new UIPartidaManageDamas(listaJugadores, windowMain);
         this.dispose();
     }//GEN-LAST:event_btnPtMaquinaActionPerformed
 

@@ -5,13 +5,14 @@
 package com.ryuk.damas_chinas;
 
 import com.ryuk.util.Constantes;
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 
 /**
  *
  * @author edyrr
  */
-public class CasillaNegra extends Casilla implements Constantes{
+public class CasillaNegra extends Casilla implements Constantes, Serializable{
 
     public CasillaNegra(int _posicionX, int _posicionY) {
         super(new ImageIcon(IMAGE_CASILLA_NEGRA), _posicionX, _posicionY);

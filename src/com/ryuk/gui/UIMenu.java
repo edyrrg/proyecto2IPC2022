@@ -5,6 +5,11 @@
 package com.ryuk.gui;
 
 import com.ryuk.file.GestorFilePlayer;
+import com.ryuk.file.GestorFilePtDamas;
+import com.ryuk.file.GestorFilePtHanoi;
+import com.ryuk.hanoi.Hanoi;
+import com.ryuk.partidas.PartidaDamas;
+import com.ryuk.partidas.PartidaHanoi;
 import com.ryuk.util.Constantes;
 import com.ryuk.util.Utils;
 import com.ryuk.player.Player;
@@ -19,20 +24,32 @@ import javax.swing.JOptionPane;
  */
 public class UIMenu extends javax.swing.JFrame implements Constantes {
 
+    private GestorFilePtHanoi gestorFilePtHanoi;
     private GestorFilePlayer gestorFilePlayer;
+    private GestorFilePtDamas gestorFilePtDamas;
     private ArrayList<Player> listPlayers;
+    private ArrayList<PartidaDamas> listDamas;
+    private ArrayList<PartidaHanoi> listHanoi;
 
     /**
      * Creates new form UIMenu
      */
     public UIMenu() {
         initComponents();
+        //lista de arreglos del proyecto
         this.listPlayers = new ArrayList<>();
+        this.listDamas = new ArrayList<>();
+        this.listHanoi = new ArrayList<>();
         ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
         this.setIconImage(icon.getImage());
         this.setVisible(true);
+        //gestores de archivo de la data
         this.gestorFilePlayer = new GestorFilePlayer();
+        this.gestorFilePtDamas = new GestorFilePtDamas();
+        this.gestorFilePtHanoi = new GestorFilePtHanoi();
         CargaListaJugadores();
+        CargarArchivosPartidasDamas();
+        CargarArchivoPartidasHanoi();
     }
 
     /**
@@ -176,19 +193,20 @@ public class UIMenu extends javax.swing.JFrame implements Constantes {
                 return;
             }
         }
-        new UITipoPartida(listPlayers, this);
+        new UITipoPartida(listPlayers, listDamas, this);
         this.dispose();
     }//GEN-LAST:event_btnDamasActionPerformed
-    
+
     /**
      * Crea un nuevo jugador
+     *
      * @return verdadero si es creado el jugador de lo contrario falso
      */
     private boolean crearNuevoJugador() {
         String name = Utils.checkName("Ingrese el nombre del jugador", "Nuevo Jugador", this);
         return Utils.validatePlayer(name, listPlayers, this);
     }
-    
+
     private void btnCrearJugadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearJugadorActionPerformed
         // TODO add your handling code here:
         new UIUserManage(listPlayers, this);
@@ -202,28 +220,32 @@ public class UIMenu extends javax.swing.JFrame implements Constantes {
     }//GEN-LAST:event_btnListaJugadoresActionPerformed
 
     private void ReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReportesActionPerformed
-        // TODO add your handling code here:
-
+            // TODO add your handling code here:
+            new UIReportes(listDamas, listHanoi, listPlayers, this);
+            this.dispose();
     }//GEN-LAST:event_ReportesActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
         EscribirListaJugadores();
+        EscribirListaPartidas();
     }//GEN-LAST:event_formWindowClosing
 
     private void btnHanoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHanoiActionPerformed
         // TODO add your handling code here:
-        new UIPartidaManageHanoi(listPlayers, this);
+        new UIPartidaManageHanoi(listPlayers, this, listHanoi);
+        this.dispose();
     }//GEN-LAST:event_btnHanoiActionPerformed
-    
+
     /**
-     * Otorga la visibilidad y focus de ventana padre cuando se cierran las ventanas hijas 
+     * Otorga la visibilidad y focus de ventana padre cuando se cierran las
+     * ventanas hijas
      */
     public void setFocusMain() {
         this.requestFocus();
         this.setVisible(true);
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Reportes;
     private javax.swing.JPanel bgPanel;
@@ -235,7 +257,7 @@ public class UIMenu extends javax.swing.JFrame implements Constantes {
     private javax.swing.JLabel lblBackGround;
     private javax.swing.JLabel lblTitulo;
     // End of variables declaration//GEN-END:variables
-    
+
     /**
      * Lee y carga la lista de jugadores guardada en el archivo listPlayer.list
      */
@@ -244,10 +266,44 @@ public class UIMenu extends javax.swing.JFrame implements Constantes {
             if (!gestorFilePlayer.cargarArchivo()) {
                 return;
             }
-            listPlayers = gestorFilePlayer.leerListaJugadores();
-            retomarConteoId();
+            listPlayers = gestorFilePlayer.leerLista();
+            retomarConteoIdJugadores();
         } catch (IOException ex) {
-            System.err.println(ex + "aqui");
+            System.err.println(ex + " aqui");
+        } catch (ClassNotFoundException ex) {
+            System.err.println("Clase no encontrada D:");
+        }
+    }
+
+    /**
+     * Lee y carga la lista de partidas de damas
+     */
+    private void CargarArchivosPartidasDamas() {
+        try {
+            if (!gestorFilePtDamas.cargarArchivo()) {
+                return;
+            }
+            listDamas = gestorFilePtDamas.leerLista();
+            retomarConteoIdPartidaDamas();
+        } catch (IOException ex) {
+            System.err.println(ex + " aqui");
+        } catch (ClassNotFoundException ex) {
+            System.err.println("Clase no encontrada D:");
+        }
+    }
+
+    /**
+     * Lee y carga la lista de partidas de hanoi
+     */
+    private void CargarArchivoPartidasHanoi() {
+        try {
+            if (!gestorFilePtHanoi.cargarArchivo()) {
+                return;
+            }
+            listHanoi = gestorFilePtHanoi.leerLista();
+            retomarConteoIdPartidaHanoi();
+        } catch (IOException ex) {
+            System.err.println(ex + " aqui");
         } catch (ClassNotFoundException ex) {
             System.err.println("Clase no encontrada D:");
         }
@@ -259,7 +315,20 @@ public class UIMenu extends javax.swing.JFrame implements Constantes {
      */
     private void EscribirListaJugadores() {
         try {
-            gestorFilePlayer.escribirListaJugadores(listPlayers);
+            gestorFilePlayer.escribirLista(listPlayers);
+        } catch (IOException ex) {
+            System.err.println(ex);
+        }
+    }
+
+    /**
+     * Escribe la lista actualizada de las partidas en el archivo listDamas y
+     * listHanoi incluso si esta no se actualiza
+     */
+    private void EscribirListaPartidas() {
+        try {
+            gestorFilePtDamas.escribirLista(listDamas);
+            gestorFilePtHanoi.escribirLista(listHanoi);
         } catch (IOException ex) {
             System.err.println(ex);
         }
@@ -268,7 +337,21 @@ public class UIMenu extends javax.swing.JFrame implements Constantes {
     /**
      * Retoma el conteo del Id para no tener Id's duplicados
      */
-    private void retomarConteoId() {
+    private void retomarConteoIdJugadores() {
         Player.setCantidadJugadores(listPlayers.size());
+    }
+
+    /**
+     * Retoma el conteo del Id para no tener Id's duplicados
+     */
+    private void retomarConteoIdPartidaDamas() {
+        PartidaDamas.setContadorPartida(listDamas.size());
+    }
+
+    /**
+     * Retoma el conteo del Id para no tener Id's duplicados
+     */
+    private void retomarConteoIdPartidaHanoi() {
+        PartidaHanoi.setContadorPartida(listHanoi.size());
     }
 }

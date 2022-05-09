@@ -8,7 +8,9 @@ import com.ryuk.damas_chinas.Damas;
 import com.ryuk.partidas.PartidaDamas;
 import com.ryuk.player.Player;
 import java.awt.Color;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -19,41 +21,83 @@ import javax.swing.ImageIcon;
  * @author edyrr
  */
 public class UIDamasChinas extends javax.swing.JFrame implements Constantes {
+
+    private final ArrayList<PartidaDamas> listDamas;
     private final PartidaDamas partida;
     private final Player jugadorUno;
     private final Player jugadorDos;
     private Damas damas;
     private final Cronometro crono;
     private final UIMenu windowMain;
+    private int selectID;
+    private boolean salir;
 
     /**
-     * Contructor que carga la configuracion de partida JcJ
-     * @param _partida 
+     * Constructur para cargar partida
+     *
+     * @param _partida
+     * @param _listDamas
+     * @param _windowMain
+     * @param build
      */
-    public UIDamasChinas(PartidaDamas _partida, UIMenu _windowMain) {
+    public UIDamasChinas(PartidaDamas _partida, ArrayList<PartidaDamas> _listDamas, UIMenu _windowMain, boolean isBuild) {
         initComponents();
         ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
         this.setIconImage(icon.getImage());
         this.getContentPane().setBackground(Color.BLACK);
         //guarda la referencia a la vetana main
         this.windowMain = _windowMain;
+        //guardar referencia de lista
+        this.listDamas = _listDamas;
         //obtiene los datos de la parida
         this.partida = _partida;
-        this.jugadorUno  = partida.getJugadorUno();
+        this.jugadorUno = partida.getJugadorUno();
         this.jugadorDos = partida.getJugadorDos();
         this.damas = partida.getJuedoDamas();
         //buildea el tablero UI y logico de damas
-        BuilderDamas.generateTable(damas, this);
+        BuilderDamas.updateReference(damas, this);
         this.add(damas);
         //Crear el cronometro
-        this.crono = new Cronometro(lblCronometro);
+        this.crono = new Cronometro(partida.getSegundos(), partida.getMinutos(), partida.getHoras(), lblCronometro);
         crono.iniciarCronometro();
         //Muestra los nombre de los jugadores en los lbls piezas comidas por
         String tmp = lblJugadorUno.getText();
         lblJugadorUno.setText(tmp + " " + jugadorUno.getNombre());
         tmp = lblJugadorDos.getText();
         lblJugadorDos.setText(tmp + " " + jugadorDos.getNombre());
-        
+        this.setVisible(true);
+    }
+
+    /**
+     * Contructor que carga la configuracion de partida JcJ
+     *
+     * @param _partida
+     */
+    public UIDamasChinas(PartidaDamas _partida, ArrayList<PartidaDamas> _listDamas, UIMenu _windowMain) {
+        initComponents();
+        ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
+        this.setIconImage(icon.getImage());
+        this.getContentPane().setBackground(Color.BLACK);
+        //guarda la referencia a la vetana main
+        this.windowMain = _windowMain;
+        //guardar referencia de lista
+        this.listDamas = _listDamas;
+        //obtiene los datos de la parida
+        this.partida = _partida;
+        this.jugadorUno = partida.getJugadorUno();
+        this.jugadorDos = partida.getJugadorDos();
+        this.damas = partida.getJuedoDamas();
+        //buildea el tablero UI y logico de damas
+        BuilderDamas.generateTable(damas, this);
+        this.add(damas);
+        //Crear el cronometro
+        this.crono = new Cronometro(partida.getSegundos(), partida.getMinutos(), partida.getHoras(), lblCronometro);
+        crono.iniciarCronometro();
+        //Muestra los nombre de los jugadores en los lbls piezas comidas por
+        String tmp = lblJugadorUno.getText();
+        lblJugadorUno.setText(tmp + " " + jugadorUno.getNombre());
+        tmp = lblJugadorDos.getText();
+        lblJugadorDos.setText(tmp + " " + jugadorDos.getNombre());
         this.setVisible(true);
     }
 
@@ -239,6 +283,11 @@ public class UIDamasChinas extends javax.swing.JFrame implements Constantes {
 
         GuardarPartida.setFont(new java.awt.Font("Lato", 1, 18)); // NOI18N
         GuardarPartida.setText("Guardar Partida");
+        GuardarPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                GuardarPartidaActionPerformed(evt);
+            }
+        });
         Menu.add(GuardarPartida);
 
         VolverMenuMain.setFont(new java.awt.Font("Lato", 1, 18)); // NOI18N
@@ -274,29 +323,82 @@ public class UIDamasChinas extends javax.swing.JFrame implements Constantes {
     private void btnRendirseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRendirseActionPerformed
         // TODO add your handling code here:
         this.crono.pararCronometro();
-        System.out.println(crono.isAlive());
-        
-        System.out.println(crono.isInterrupted());
     }//GEN-LAST:event_btnRendirseActionPerformed
 
     private void VolverMenuMainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VolverMenuMainActionPerformed
         // TODO add your handling code here:
-        
+        salir = true;
         this.dispose();
         windowMain.setFocusMain();
     }//GEN-LAST:event_VolverMenuMainActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         // TODO add your handling code here:
-        this.dispose();
+        if (!salir) {
+            this.setAutoRequestFocus(true);
+            this.setVisible(true);
+        }
     }//GEN-LAST:event_formWindowClosed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         // TODO add your handling code here:
-        
-        windowMain.setFocusMain();
+        //primer filtro
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Esta seguro de regresar al menu principal?",
+                "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (confirm == 1) {
+            salir = false;
+            return;
+        }
+        if (confirm == -1) {
+            salir = false;
+            return;
+        }
+        //segundo filtro
+        int confirm2 = JOptionPane.showConfirmDialog(this, "¿Desea guardar la partida?",
+                "Advertencia", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (confirm2 == 1) {
+            salir = true;
+            windowMain.setFocusMain();
+            return;
+        }
+        if (confirm2 == -1) {
+            salir = true;
+            windowMain.setFocusMain();
+            return;
+        }
+        if (confirm2 == 0) {
+            guardarRelojPartida();
+            listDamas.add(partida);
+            salir = true;
+            windowMain.setFocusMain();
+        }
+
     }//GEN-LAST:event_formWindowClosing
 
+    private void GuardarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GuardarPartidaActionPerformed
+        // TODO add your handling code here:
+        guardarRelojPartida();
+        //Guarda y abre menu main
+        if (listDamas.contains(partida)) {
+            selectID = listDamas.indexOf(partida);
+            listDamas.set(selectID, partida);
+            JOptionPane.showMessageDialog(this, "La partida se guardo con exito!", "Guardar", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        listDamas.add(partida);
+        JOptionPane.showMessageDialog(this, "La partida se guardo con exito!", "Guardar", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_GuardarPartidaActionPerformed
+
+    private void guardarRelojPartida() {
+        //Para reloj y envia datos para su continuacion
+        crono.pararCronometro();
+        int tmpS = crono.getSegundos();
+        int tmpM = crono.getMinutos();
+        int tmpH = crono.getHoras();
+        partida.setSegundos(tmpS);
+        partida.setMinutos(tmpM);
+        partida.setHoras(tmpH);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem GuardarPartida;

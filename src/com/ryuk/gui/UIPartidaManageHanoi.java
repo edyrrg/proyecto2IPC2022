@@ -4,6 +4,8 @@
  */
 package com.ryuk.gui;
 
+import com.ryuk.hanoi.Hanoi;
+import com.ryuk.partidas.PartidaHanoi;
 import com.ryuk.player.Player;
 import static com.ryuk.util.Constantes.ICON_UI_IMAGE;
 import java.util.ArrayList;
@@ -19,20 +21,25 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
 
     private int seleccionPlayer;
     private final ArrayList<Player> listaJugadores;
-    private UIMenu windowMain;
+    private final ArrayList<PartidaHanoi> listaPtHanoi;
+    private final UIMenu windowMain;
+    private boolean salir;
 
     /**
      * Creates new form UIPartidaManageHanoi
      */
-    public UIPartidaManageHanoi(ArrayList<Player> _listaJugadores, UIMenu _windowMain) {
+    public UIPartidaManageHanoi(ArrayList<Player> _listaJugadores, UIMenu _windowMain, ArrayList<PartidaHanoi> _listaHanoi) {
         initComponents();
         ImageIcon icon = new ImageIcon(ICON_UI_IMAGE);
         this.setIconImage(icon.getImage());
         this.listaJugadores = _listaJugadores;
+        this.listaPtHanoi = _listaHanoi;
         this.windowMain = _windowMain;
         tablaJugadores.setEnabled(false);
         cargarListaJugadores();
         this.setVisible(true);
+        this.salir = false;
+        this.seleccionPlayer = 0;
     }
 
     public void cargarListaJugadores() {
@@ -57,17 +64,22 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
         bgPanel = new javax.swing.JPanel();
         btnPartidaNormal = new javax.swing.JButton();
         btnSolucionRapida = new javax.swing.JButton();
-        btnIniciarPartida = new javax.swing.JButton();
         btnCargarPartida = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaJugadores = new javax.swing.JTable();
         lblJugadorElegido = new javax.swing.JLabel();
+        btnIniciarPartida = new javax.swing.JButton();
+        lblNumDiscos = new javax.swing.JLabel();
+        cbCantDiscos = new javax.swing.JComboBox<>();
         lblBackGround = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(700, 490));
+        setTitle("Partida Manage");
         addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
             }
@@ -94,19 +106,16 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
         btnSolucionRapida.setPreferredSize(new java.awt.Dimension(170, 50));
         bgPanel.add(btnSolucionRapida, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, -1, -1));
 
-        btnIniciarPartida.setBackground(new java.awt.Color(7, 7, 60));
-        btnIniciarPartida.setFont(new java.awt.Font("Lato", 1, 18)); // NOI18N
-        btnIniciarPartida.setForeground(new java.awt.Color(255, 255, 255));
-        btnIniciarPartida.setText("Iniciar Partida");
-        btnIniciarPartida.setEnabled(false);
-        btnIniciarPartida.setPreferredSize(new java.awt.Dimension(170, 50));
-        bgPanel.add(btnIniciarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 380, -1, -1));
-
         btnCargarPartida.setBackground(new java.awt.Color(7, 7, 60));
         btnCargarPartida.setFont(new java.awt.Font("Lato", 1, 18)); // NOI18N
         btnCargarPartida.setForeground(new java.awt.Color(255, 255, 255));
         btnCargarPartida.setText("Cargar Partida");
         btnCargarPartida.setPreferredSize(new java.awt.Dimension(170, 50));
+        btnCargarPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCargarPartidaActionPerformed(evt);
+            }
+        });
         bgPanel.add(btnCargarPartida, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, -1, -1));
 
         jPanel2.setBackground(new java.awt.Color(0, 0, 0));
@@ -119,7 +128,15 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
             new String [] {
                 "ID", "Nombre"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         tablaJugadores.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaJugadoresMouseClicked(evt);
@@ -131,19 +148,47 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
         lblJugadorElegido.setForeground(new java.awt.Color(255, 255, 255));
         lblJugadorElegido.setText("Jugador Elegido: ");
 
+        btnIniciarPartida.setBackground(new java.awt.Color(7, 7, 60));
+        btnIniciarPartida.setFont(new java.awt.Font("Lato", 1, 18)); // NOI18N
+        btnIniciarPartida.setForeground(new java.awt.Color(255, 255, 255));
+        btnIniciarPartida.setText("Iniciar Partida");
+        btnIniciarPartida.setEnabled(false);
+        btnIniciarPartida.setPreferredSize(new java.awt.Dimension(170, 50));
+        btnIniciarPartida.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIniciarPartidaActionPerformed(evt);
+            }
+        });
+
+        lblNumDiscos.setFont(new java.awt.Font("Lato", 1, 18)); // NOI18N
+        lblNumDiscos.setForeground(new java.awt.Color(255, 255, 255));
+        lblNumDiscos.setText("No. de Discos");
+
+        cbCantDiscos.setBackground(new java.awt.Color(7, 7, 60));
+        cbCantDiscos.setFont(new java.awt.Font("Lato", 1, 18)); // NOI18N
+        cbCantDiscos.setForeground(new java.awt.Color(255, 255, 255));
+        cbCantDiscos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "3", "4", "5", "6", "7", "8" }));
+        cbCantDiscos.setEnabled(false);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(17, 17, 17)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblJugadorElegido)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(18, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(41, 41, 41)
-                        .addComponent(lblJugadorElegido)))
-                .addContainerGap(18, Short.MAX_VALUE))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbCantDiscos, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblNumDiscos))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnIniciarPartida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -152,10 +197,17 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(lblJugadorElegido)
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblNumDiscos)
+                        .addGap(7, 7, 7)
+                        .addComponent(cbCantDiscos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnIniciarPartida, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
-        bgPanel.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 20, 400, 340));
+        bgPanel.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 20, 400, 410));
 
         lblBackGround.setIcon(new javax.swing.ImageIcon("D:\\proyectos_u\\proyecto2\\resource\\BackGroundR3.jpg")); // NOI18N
         bgPanel.add(lblBackGround, new org.netbeans.lib.awtextra.AbsoluteConstraints(-120, 0, 820, 490));
@@ -185,14 +237,16 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
         if (confirm == -1) {
             return;
         }
+        salir = true;
         windowMain.setFocusMain();
     }//GEN-LAST:event_formWindowClosing
 
     private void btnPartidaNormalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPartidaNormalActionPerformed
         // TODO add your handling code here:
-        JOptionPane.showMessageDialog(this, "Seleccione el jugador con el que desea empezar la partida...",
+        JOptionPane.showMessageDialog(this, "Seleccione el jugador con el que desea empezar la partida\n y el numero de discos para configurar la partida...",
                 "Damas Chinas", JOptionPane.INFORMATION_MESSAGE);
         tablaJugadores.setEnabled(true);
+        cbCantDiscos.setEnabled(true);
         btnPartidaNormal.setEnabled(false);
         btnCargarPartida.setEnabled(false);
         btnSolucionRapida.setEnabled(false);
@@ -204,23 +258,48 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
         elegirJugador();
     }//GEN-LAST:event_tablaJugadoresMouseClicked
 
+    private void btnIniciarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIniciarPartidaActionPerformed
+        // TODO add your handling code here:
+        int numDiscos = Integer.parseInt(cbCantDiscos.getSelectedItem().toString());
+        Player tmpJugador = listaJugadores.get(seleccionPlayer);
+
+        new UIHanoi(listaPtHanoi, tmpJugador, windowMain, numDiscos);
+        salir = true;
+        this.dispose();
+
+    }//GEN-LAST:event_btnIniciarPartidaActionPerformed
+
+    private void btnCargarPartidaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarPartidaActionPerformed
+        // TODO add your handling code here:
+        new UICargarPartidaHanoi(listaPtHanoi, this, windowMain);
+        salir = true;
+        this.dispose();
+    }//GEN-LAST:event_btnCargarPartidaActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        if (!salir) {
+            this.setFocusMe();
+        }
+    }//GEN-LAST:event_formWindowClosed
+
     private void elegirJugador() {
         try {
+
             Player player;
             int confirm;
             int tmpSeleccion = tablaJugadores.getSelectedRow();
             player = listaJugadores.get(tmpSeleccion);
             confirm = JOptionPane.showConfirmDialog(this, "¿Desea elegir a " + player.getNombre() + " ?",
                     "Elegir Jugador", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-            if (confirm == 1) {
+            if (confirm == JOptionPane.NO_OPTION) {
                 return;
             }
-            if (confirm == -1) {
+            if (confirm == JOptionPane.CANCEL_OPTION) {
                 return;
             }
             seleccionPlayer = tmpSeleccion;
-            String tmpTxt = lblJugadorElegido.getText();
-            lblJugadorElegido.setText(tmpTxt + " "
+            lblJugadorElegido.setText("Jugador: " + " "
                     + listaJugadores.get(seleccionPlayer).getNombre());
         } catch (IndexOutOfBoundsException e) {
             System.err.println("no apunto a nada");
@@ -229,17 +308,25 @@ public class UIPartidaManageHanoi extends javax.swing.JFrame {
         }
 
     }
+
+    public void setFocusMe() {
+        salir = false;
+        this.requestFocus();
+        this.setVisible(true);
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bgPanel;
     private javax.swing.JButton btnCargarPartida;
     private javax.swing.JButton btnIniciarPartida;
     private javax.swing.JButton btnPartidaNormal;
     private javax.swing.JButton btnSolucionRapida;
+    private javax.swing.JComboBox<String> cbCantDiscos;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblBackGround;
     private javax.swing.JLabel lblJugadorElegido;
+    private javax.swing.JLabel lblNumDiscos;
     private javax.swing.JTable tablaJugadores;
     // End of variables declaration//GEN-END:variables
 }

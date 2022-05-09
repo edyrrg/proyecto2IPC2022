@@ -13,6 +13,7 @@ import com.ryuk.player.Player;
  */
 public class PartidaDamas extends Partida {
 
+    private final int ID;
     private final Damas juegoDamas;
     private Player jugadorUno;
     private Player jugadorDos;
@@ -20,11 +21,20 @@ public class PartidaDamas extends Partida {
     private int contadorMovimientoJugadorDos;
     private boolean partidaFinalizada;
     private int ganador;
+    public static int contadorID;
 
     public PartidaDamas(Damas juegoDamas, Player jugadorUno, Player jugadorDos) {
         this.juegoDamas = juegoDamas;
         this.jugadorUno = jugadorUno;
         this.jugadorDos = jugadorDos;
+        this.contadorMovimientosJugadorUno = 0;
+        this.contadorMovimientoJugadorDos = 0;
+        this.ID = ++contadorID;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return (PartidaDamas) super.clone();
     }
 
     /**
@@ -100,4 +110,11 @@ public class PartidaDamas extends Partida {
         this.partidaFinalizada = partidaFinalizada;
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public static void setContadorPartida(int lastID) {
+        contadorID = lastID;
+    }
 }

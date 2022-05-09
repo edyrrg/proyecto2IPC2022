@@ -4,6 +4,7 @@
  */
 package com.ryuk.damas_chinas;
 
+import java.io.Serializable;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -11,8 +12,8 @@ import javax.swing.JLabel;
  *
  * @author edyrr
  */
-public class Casilla extends JLabel {
-    
+public class Casilla extends JLabel implements Serializable {
+
     protected int posicionX;
     protected int posicionY;
 
@@ -37,5 +38,5 @@ public class Casilla extends JLabel {
     public void setPosicionY(int posicionY) {
         this.posicionY = posicionY;
     }
-    
+
 }

@@ -10,44 +10,81 @@ import java.io.Serializable;
  *
  * @author edyrr
  */
-public class Partida implements Serializable {
+public class Partida implements Serializable, Cloneable {
 
-    protected int[] registroCronometro;
-    
+    protected int segundos;
+    protected int minutos;
+    protected int horas;
+
     public Partida() {
-        this.registroCronometro = new int[3];
+        this.segundos = 0;
+        this.minutos = 0;
+        this.horas = 0;
     }
 
-    public void setSegundo(int _s) {
-        this.registroCronometro[0] = _s;
+    public Partida(int segundos, int minutos, int horas) {
+        this.segundos = segundos;
+        this.minutos = minutos;
+        this.horas = horas;
     }
 
-    public void setMinutos(int _m) {
-        this.registroCronometro[1] = _m;
+    /**
+     * construye un string en forma de reloj
+     *
+     * @return string con un registro de hora
+     */
+    public String timeToString() {
+        String txtS = "", txtM = "", txtH = "";
+
+        if (segundos < 10) {
+            txtS = "0" + segundos;
+        } else {
+            txtS += segundos;
+        }
+
+        if (minutos < 10) {
+            txtM = "0" + minutos;
+        } else {
+            txtM += minutos;
+        }
+
+        if (horas < 10) {
+            txtH = "0" + horas;
+        } else {
+            txtH += horas;
+        }
+        String reloj = txtH + ":" + txtM + ":" + txtS;
+        return reloj;
     }
 
-    public void setHoras(int _h) {
-        this.registroCronometro[2] = _h;
+    public void registrarReloj(int horas, int minutos, int segundos) {
+        this.setHoras(horas);
+        this.setMinutos(minutos);
+        this.setSegundos(segundos);
     }
 
     public int getSegundos() {
-        return this.registroCronometro[0];
+        return segundos;
+    }
+
+    public void setSegundos(int segundos) {
+        this.segundos = segundos;
     }
 
     public int getMinutos() {
-        return this.registroCronometro[1];
+        return minutos;
+    }
+
+    public void setMinutos(int minutos) {
+        this.minutos = minutos;
     }
 
     public int getHoras() {
-        return this.registroCronometro[2];
+        return horas;
     }
 
-    public int[] getRegistroCronometro() {
-        return registroCronometro;
-    }
-
-    public void setRegistroCronometro(int[] registroCronometro) {
-        this.registroCronometro = registroCronometro;
+    public void setHoras(int horas) {
+        this.horas = horas;
     }
 
 }

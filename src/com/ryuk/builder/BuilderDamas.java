@@ -7,6 +7,8 @@ import com.ryuk.damas_chinas.CasillaNegra;
 import com.ryuk.damas_chinas.FichaBlanca;
 import com.ryuk.damas_chinas.FichaNegra;
 import com.ryuk.damas_chinas.Damas;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JFrame;
 
 /*
@@ -27,7 +29,7 @@ public class BuilderDamas implements Constantes {
      * @param main
      */
     public static void generateTable(Damas tablero, JFrame main) {
-        tablero.setBounds(20, 20, MAX_SIZE_TABLERO, MAX_SIZE_TABLERO);
+        tablero.setBounds(40, 40, MAX_SIZE_TABLERO, MAX_SIZE_TABLERO);
         for (int i = 0; i < MAX_CASILLAS; i++) {
             for (int j = 0; j < MAX_CASILLAS; j++) {
                 if ((i + 1) % 2 == 0) {
@@ -87,5 +89,27 @@ public class BuilderDamas implements Constantes {
             return new CasillaBlanca(x, y, new FichaBlanca(x, y), tablero, main);
         }
         return new CasillaBlanca(x, y, null, tablero, main);
+    }
+
+    public static void updateReference(Damas damas, JFrame main) {
+
+        for (int i = 0; i < MAX_CASILLAS; i++) {
+            for (int j = 0; j < MAX_CASILLAS; j++) {
+                try {
+                    //obtiene la casilla especificada
+                    Casilla tmpTablero = damas.getCasilla(i, j);
+                    //comprueba que la casilla sea una casilla tipo Blanca
+                    if (tmpTablero instanceof CasillaBlanca) {
+                        CasillaBlanca tmpCasillaBlanca;
+                        tmpCasillaBlanca = (CasillaBlanca) tmpTablero;
+                        tmpCasillaBlanca.setVentanaMain(main);
+                        tmpCasillaBlanca.crearMiMouseClicked();
+                    }
+                } catch (Damas.Casilla_Error ex) {
+                    System.err.println(ex);
+                }
+
+            }
+        }
     }
 }

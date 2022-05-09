@@ -1,5 +1,6 @@
 package com.ryuk.damas_chinas;
 
+import java.io.Serializable;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -12,7 +13,7 @@ import javax.swing.JLabel;
  *
  * @author edyrr
  */
-public class Ficha {
+public class Ficha implements Serializable {
 
     protected final ImageIcon img;
     protected int posicionX;

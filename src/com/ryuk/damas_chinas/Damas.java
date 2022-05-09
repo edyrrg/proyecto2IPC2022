@@ -45,7 +45,7 @@ public class Damas extends JPanel implements Constantes, Serializable {
     }
 
 
-    class Casilla_Error extends Exception {
+    public class Casilla_Error extends Exception {
 
         public Casilla_Error() {
 
